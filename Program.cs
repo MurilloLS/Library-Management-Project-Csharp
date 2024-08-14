@@ -7,47 +7,44 @@ namespace LibraryManagement
   {
     static void Main(string[] args)
     {
+      // Instanciando o serviço da biblioteca
       LibraryService libraryService = new LibraryService();
 
-      // Criar autores
-      Author author1 = new Author("Murillo");
-      Author author2 = new Author("Matheus");
+      // Criando alguns autores
+      Author author1 = new ("Murillo");
+      Author author2 = new ("Matheus");
 
-      // Adicionar autores
+      // Adicionando os autores
       libraryService.AddAuthor(author1);
       libraryService.AddAuthor(author2);
 
-      // Criar livros
-      Book book1 = new Book("Star Wars - Capitulo I", author1);
-      Book book2 = new Book("Starfild", author2);
+      // Criando alguns livros
+      Book book1 = new ("Harry Potter", author1);
+      Book book2 = new ("Star Wars", author2 );
 
-      // Adicionar livros
+      // Adicionando os livros
       libraryService.AddBook(book1);
       libraryService.AddBook(book2);
 
-      // Listar todos os livros
-      Console.WriteLine("All Books:");
-      libraryService.GetBooks();
+      // Solicitando empréstimo de um livro
+      libraryService.RequestBookLoan(book1.Id);
 
-      // Buscar e pedir empréstimo de um livro pelo ID
-      Console.WriteLine("\nRequest a book loan by ID:");
-      string searchBookIdInput = Console.ReadLine();
-      if (Guid.TryParse(searchBookIdInput, out Guid searchBookId))
-      {
-        libraryService.RequestBookLoan(searchBookId);
-      }
-      else
-      {
-        Console.WriteLine("Invalid ID format.");
-      }
-
-      // Processar a solicitação de empréstimo
-      Console.WriteLine("\nProcessing loan request:");
+      // Processando a solicitação de empréstimo
       libraryService.ProcessLoanRequest();
 
-      // Tentar processar novamente para mostrar a fila vazia
-      Console.WriteLine("\nProcessing another loan request:");
-      libraryService.ProcessLoanRequest();
+      // Verificando se o livro foi removido da biblioteca
+      Console.WriteLine(libraryService.SearchBookById(book1.Id) == null ? "Book was loaned." : "Book is still available.");
+
+      // Desfazendo o último empréstimo
+      libraryService.UndoLastLoan();
+
+      // Verificando se o livro foi devolvido à biblioteca
+      Console.WriteLine(libraryService.SearchBookById(book1.Id) != null ? "Book was returned." : "Book is not available.");
+
+      // Teste para buscar autor por ID
+      var foundAuthor = libraryService.SearchAuthorById(author1.Id);
+      Console.WriteLine(foundAuthor != null ? $"Found Author: {foundAuthor.Name}" : "Author not found.");
     }
   }
 }
+

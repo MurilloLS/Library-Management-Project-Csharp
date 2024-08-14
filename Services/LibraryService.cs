@@ -4,12 +4,12 @@ namespace LibraryManagement.Services
 {
   public class LibraryService
   {
-
-    private Dictionary<string, Book> bookByTitleDictionary;
-    private Dictionary<Guid, Book> bookByIdDictionary;
-    private Dictionary<string, Author> authorByNameDictionary;
-    private Dictionary<Guid, Author> authorByIdDictionary;
-    private Queue<Book> loanQueue;
+    private readonly Dictionary<string, Book> bookByTitleDictionary;
+    private readonly Dictionary<Guid, Book> bookByIdDictionary;
+    private readonly Dictionary<string, Author> authorByNameDictionary;
+    private readonly Dictionary<Guid, Author> authorByIdDictionary;
+    private readonly Queue<Book> loanQueue;
+    private readonly Stack<Book> loanHistory;
 
     public LibraryService()
     {
@@ -18,6 +18,7 @@ namespace LibraryManagement.Services
       authorByNameDictionary = new Dictionary<string, Author>();
       authorByIdDictionary = new Dictionary<Guid, Author>();
       loanQueue = new Queue<Book>();
+      loanHistory = new Stack<Book>();
     }
     public void AddAuthor(Author author)
     {
@@ -58,12 +59,13 @@ namespace LibraryManagement.Services
         System.Console.WriteLine("Book not found.");
       }
     }
-
     public void ProcessLoanRequest() //Classe para processar o emprestimo
     {
       if (loanQueue.Count > 0)
       {
         Book loanedBook = loanQueue.Dequeue();
+        loanHistory.Push(loanedBook);
+        bookByIdDictionary.Remove(loanedBook.Id);
         System.Console.WriteLine($"Book '{loanedBook.Title}' has been loaned out.");
       }
       else 
@@ -71,7 +73,14 @@ namespace LibraryManagement.Services
         Console.WriteLine("No loan request in the queue.");
       }
     }
-
+    public void UndoLastLoan()
+    {
+      if(loanHistory.Count > 0)
+      {
+        var book = loanHistory.Pop();
+        bookByIdDictionary.Add(book.Id, book);
+      }
+    }
 
 
     public Book SearchBookByTitle(string title)
