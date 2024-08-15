@@ -20,12 +20,15 @@ namespace LibraryManagement.Services
       loanQueue = new Queue<Book>();
       loanHistory = new Stack<Book>();
     }
+
+    //Métodos para add
     public void AddAuthor(Author author)
     {
       if (!authorByNameDictionary.ContainsKey(author.Name))
       {
         authorByNameDictionary.Add(author.Name, author);
         authorByIdDictionary.Add(author.Id, author);
+
       }
       else
       {
@@ -41,48 +44,14 @@ namespace LibraryManagement.Services
         bookByIdDictionary.Add(book.Id, book);
       }
       else
-      {   
+      {
         Console.WriteLine("Book already exists in the dictionary.");
       }
 
     }
 
-    public void RequestBookLoan(Guid bookId) //Classe para requerir emprestimo do livro
-    {
-      if(bookByIdDictionary.TryGetValue(bookId, out Book book))
-      {
-        loanQueue.Enqueue(book);
-        System.Console.WriteLine($"Book '{book.Title}' has been added to the loan queue.");
-      }
-      else
-      {
-        System.Console.WriteLine("Book not found.");
-      }
-    }
-    public void ProcessLoanRequest() //Classe para processar o emprestimo
-    {
-      if (loanQueue.Count > 0)
-      {
-        Book loanedBook = loanQueue.Dequeue();
-        loanHistory.Push(loanedBook);
-        bookByIdDictionary.Remove(loanedBook.Id);
-        System.Console.WriteLine($"Book '{loanedBook.Title}' has been loaned out.");
-      }
-      else 
-      {
-        Console.WriteLine("No loan request in the queue.");
-      }
-    }
-    public void UndoLastLoan()
-    {
-      if(loanHistory.Count > 0)
-      {
-        var book = loanHistory.Pop();
-        bookByIdDictionary.Add(book.Id, book);
-      }
-    }
 
-
+    //Métodos de busca
     public Book SearchBookByTitle(string title)
     {
       if (bookByTitleDictionary.TryGetValue(title, out Book foundBook))
@@ -91,7 +60,7 @@ namespace LibraryManagement.Services
       }
       else
       {
-        Console.WriteLine("Not found!");
+        Console.WriteLine("Book not found!");
         return null;
       }
     }
@@ -103,7 +72,7 @@ namespace LibraryManagement.Services
       }
       else
       {
-        Console.WriteLine("Not found!");
+        Console.WriteLine("Book not found!");
         return null;
       }
     }
@@ -115,7 +84,7 @@ namespace LibraryManagement.Services
       }
       else
       {
-        Console.WriteLine("Not found!");
+        Console.WriteLine("Author not found!");
         return null;
       }
     }
@@ -127,11 +96,10 @@ namespace LibraryManagement.Services
       }
       else
       {
-        Console.WriteLine("Not found!");
+        Console.WriteLine("Author not found!");
         return null;
       }
     }
-
     public void GetAuthors()
     {
       foreach (var author in authorByNameDictionary.Values)
@@ -144,6 +112,69 @@ namespace LibraryManagement.Services
       foreach (var book in bookByTitleDictionary.Values)
       {
         Console.WriteLine($"Id: {book.Id} - Title: {book.Title}, Author: {book.Author.Name}");
+      }
+    }
+
+
+    //Métodos para atualização
+    public bool UpdateBook(Book updatedBook)
+    {
+      if (bookByIdDictionary.ContainsKey(updatedBook.Id))
+      {
+        bookByIdDictionary[updatedBook.Id] = updatedBook;
+        return true;
+      }
+      return false;
+    }
+    public bool UpdateAuthor(Author updatedAuthor)
+    {
+      if (authorByIdDictionary.ContainsKey(updatedAuthor.Id))
+      {
+        authorByIdDictionary[updatedAuthor.Id] = updatedAuthor;
+        return true;
+      }
+      return false;
+    }
+
+
+
+
+
+
+
+    //Métodos para emprestimo
+    public void RequestBookLoan(Guid bookId)
+    {
+      if (bookByIdDictionary.TryGetValue(bookId, out Book book))
+      {
+        loanQueue.Enqueue(book);
+        System.Console.WriteLine($"Book '{book.Title}' has been added to the loan queue.");
+      }
+      else
+      {
+        System.Console.WriteLine("Book not found.");
+      }
+    }
+    public void ProcessLoanRequest()
+    {
+      if (loanQueue.Count > 0)
+      {
+        Book loanedBook = loanQueue.Dequeue();
+        loanHistory.Push(loanedBook);
+        bookByIdDictionary.Remove(loanedBook.Id);
+        System.Console.WriteLine($"Book '{loanedBook.Title}' has been loaned out.");
+      }
+      else
+      {
+        Console.WriteLine("No loan request in the queue.");
+      }
+    }
+    public void UndoLastLoan()
+    {
+      if (loanHistory.Count > 0)
+      {
+        var book = loanHistory.Pop();
+        bookByIdDictionary.Add(book.Id, book);
       }
     }
   }
