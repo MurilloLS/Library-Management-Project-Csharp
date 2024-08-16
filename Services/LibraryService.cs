@@ -32,7 +32,7 @@ namespace LibraryManagement.Services
       }
       else
       {
-        Console.WriteLine("Book already exists in the dictionary.");
+        Console.WriteLine("Author already exists in the dictionary.");
       }
 
     }
@@ -137,6 +137,34 @@ namespace LibraryManagement.Services
     }
 
 
+    //Métodos para delete
+    public bool DeleteBook(Guid bookId)
+    {
+      if (bookByIdDictionary.TryGetValue(bookId, out Book book))
+      {
+        bookByIdDictionary.Remove(bookId);
+        bookByTitleDictionary.Remove(book.Title);
+        return true;
+      }
+      return false;
+    }
+    public bool DeleteAuthor(Guid authorId)
+    {
+      if (authorByIdDictionary.TryGetValue(authorId, out Author author))
+      {
+        var booksToRemove = bookByIdDictionary.Values.Where(book => book.Author.Id == authorId).ToList();
+
+        foreach (var book in booksToRemove)
+        {
+          bookByTitleDictionary.Remove(book.Title);
+          bookByIdDictionary.Remove(book.Id);
+        }
+        authorByIdDictionary.Remove(authorId);
+        authorByNameDictionary.Remove(author.Name);
+        return true;
+      }
+      return false;
+    }
 
 
 
