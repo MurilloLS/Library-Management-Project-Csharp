@@ -15,9 +15,8 @@ namespace LibraryManagement.Services
 
     public void AddBook(Book book)
     {
-      if (!bookByTitleDictionary.ContainsKey(book.Title))
+      if (bookByTitleDictionary.TryAdd(book.Title, book))
       {
-        bookByTitleDictionary.Add(book.Title, book);
         bookByIdDictionary.Add(book.Id, book);
       }
       else
@@ -52,14 +51,13 @@ namespace LibraryManagement.Services
       }
     }
 
-    public bool UpdateBook(Book updatedBook)
+    public bool UpdateBook(Book updatedBook, string currentTitle)
     {
       if (bookByIdDictionary.ContainsKey(updatedBook.Id))
       {
-        var oldBook = bookByIdDictionary[updatedBook.Id];
-        bookByTitleDictionary.Remove(oldBook.Title);
-        bookByTitleDictionary.Add(updatedBook.Title, updatedBook);
         bookByIdDictionary[updatedBook.Id] = updatedBook;
+        bookByTitleDictionary.Remove(currentTitle);
+        bookByTitleDictionary.Add(updatedBook.Title, updatedBook);
         return true;
       }
       return false;
@@ -70,7 +68,7 @@ namespace LibraryManagement.Services
       if (bookByIdDictionary.TryGetValue(bookId, out Book book))
       {
         bookByTitleDictionary.Remove(book.Title);
-        bookByIdDictionary.Remove(bookId);
+        bookByIdDictionary.Remove(book.Id);
         return true;
       }
       return false;
@@ -78,9 +76,9 @@ namespace LibraryManagement.Services
 
     public void GetBooks()
     {
-      foreach (var book in bookByTitleDictionary.Values)
+      foreach (var book in bookByIdDictionary)
       {
-        Console.WriteLine($"Id: {book.Id} - Title: {book.Title}, Author: {book.Author.Name}");
+        Console.WriteLine($"Id: {book.Value.Id} - Title: {book.Value.Title}, Author: {book.Value.Author.Name}");
       }
     }
   }

@@ -15,9 +15,8 @@ namespace LibraryManagement.Services
 
     public void AddAuthor(Author author)
     {
-      if (!authorByNameDictionary.ContainsKey(author.Name))
+      if (authorByNameDictionary.TryAdd(author.Name, author))
       {
-        authorByNameDictionary.Add(author.Name, author);
         authorByIdDictionary.Add(author.Id, author);
       }
       else
@@ -52,14 +51,13 @@ namespace LibraryManagement.Services
       }
     }
 
-    public bool UpdateAuthor(Author updatedAuthor)
+    public bool UpdateAuthor(Author updatedAuthor, string currentName)
     {
       if (authorByIdDictionary.ContainsKey(updatedAuthor.Id))
       {
-        var oldAuthor = authorByIdDictionary[updatedAuthor.Id];
-        authorByNameDictionary.Remove(oldAuthor.Name);
-        authorByNameDictionary.Add(updatedAuthor.Name, updatedAuthor);
         authorByIdDictionary[updatedAuthor.Id] = updatedAuthor;
+        authorByNameDictionary.Remove(currentName);
+        authorByNameDictionary.Add(updatedAuthor.Name, updatedAuthor);
         return true;
       }
       return false;
@@ -70,7 +68,7 @@ namespace LibraryManagement.Services
       if (authorByIdDictionary.TryGetValue(authorId, out Author author))
       {
         authorByNameDictionary.Remove(author.Name);
-        authorByIdDictionary.Remove(authorId);
+        authorByIdDictionary.Remove(author.Id);
         return true;
       }
       return false;
@@ -78,9 +76,9 @@ namespace LibraryManagement.Services
 
     public void GetAuthors()
     {
-      foreach (var author in authorByNameDictionary.Values)
+      foreach (var author in authorByIdDictionary)
       {
-        Console.WriteLine($"Id: {author.Id} - Author: {author.Name}");
+        Console.WriteLine($"Id: {author.Value.Id} - Author: {author.Value.Name}");
       }
     }
   }
