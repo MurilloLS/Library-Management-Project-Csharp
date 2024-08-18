@@ -7,95 +7,69 @@ namespace LibraryManagement
   {
     static void Main(string[] args)
     {
-      // Instanciando o serviço da biblioteca
-      LibraryService libraryService = new LibraryService();
+      // Instanciar os serviços
+      var authorService = new AuthorService();
+      var bookService = new BookService();
+      var loanService = new LoanService(bookService);
 
-      // Criando e adicionando autores
-      Author author1 = new("Murillo");
-      Author author2 = new("Matheus");
-      libraryService.AddAuthor(author1);
-      libraryService.AddAuthor(author2);
-      libraryService.GetAuthors();
+      // Criar e adicionar um autor
+      var author = new Author("Murillo");
+      authorService.AddAuthor(author);
 
-      // Criando e adicionando livros
-      Book book1 = new("Harry Potter", author1);
-      Book book2 = new("Avatar", author2);
-      libraryService.AddBook(book1);
-      libraryService.AddBook(book2);
-      libraryService.GetBooks();
+      // Criar e adicionar um livro
+      var book = new Book("Avatar", author);
+      bookService.AddBook(book);
 
-      // Atualizando um livro
-      book1.Title = "Annie Frank"; // Atualização do título
-      bool bookUpdated = libraryService.UpdateBook(book1);
-      Console.WriteLine(bookUpdated ? "\nBook updated successfully." : "\nBook update failed.");
-
-      // Atualizando um autor
-      author2.Name = "Robson"; // Atualização do nome
-      bool authorUpdated = libraryService.UpdateAuthor(author2);
-      Console.WriteLine(authorUpdated ? "Author updated successfully." : "Author update failed.");
-
-      // Verificando as atualizações
-      var updatedBook = libraryService.SearchBookById(book1.Id);
-      if (updatedBook != null)
+      // Buscar e exibir livro e autor
+      var foundBook = bookService.SearchBookByTitle("Avatar");
+      if (foundBook != null)
       {
-        Console.WriteLine($"\nUpdated Book: {updatedBook.Title}");
-      }
-      else
-      {
-        Console.WriteLine("\nBook not found.");
+        Console.WriteLine($"Found book: {foundBook.Title} by {foundBook.Author.Name}");
       }
 
-      var updatedAuthor = libraryService.SearchAuthorById(author2.Id);
-      if (updatedAuthor != null)
+      var foundAuthor = authorService.SearchAuthorByName("Murillo");
+      if (foundAuthor != null)
       {
-        Console.WriteLine($"Updated Author: {updatedAuthor.Name}\n");
-      }
-      else
-      {
-        Console.WriteLine("Author not found.\n");
+        Console.WriteLine($"Found author: {foundAuthor.Name}");
       }
 
-      libraryService.GetAuthors();
-      libraryService.GetBooks();
+      // Listar todos os autores e livros
+      Console.WriteLine("\nAll authors:");
+      authorService.GetAuthors();
+      Console.WriteLine("\nAll books:");
+      bookService.GetBooks();
 
-      Console.WriteLine();
+      // Solicitar e processar um empréstimo
+      loanService.RequestBookLoan(book.Id);
+      loanService.ProcessLoanRequest();
 
-      // Solicitando empréstimo de um livro
-      libraryService.RequestBookLoan(book1.Id);
+      // Desfazer o último empréstimo
+      loanService.UndoLastLoan();
 
-      // Processando a solicitação de empréstimo
-      libraryService.ProcessLoanRequest();
+      // Atualizar livro e autor
+      var updatedBook = new Book("Avatar (Updated)", author);
+      updatedBook.Id = book.Id; // Manter o mesmo ID para atualização
+      bookService.UpdateBook(updatedBook);
 
-      // Verificando se o livro foi removido da biblioteca
-      Console.WriteLine(libraryService.SearchBookById(book1.Id) == null ? "Book was loaned." : "Book is still available.");
+      var updatedAuthor = new Author("Murillo (Updated)");
+      updatedAuthor.Id = author.Id; // Manter o mesmo ID para atualização
+      authorService.UpdateAuthor(updatedAuthor);
 
-      // Desfazendo o último empréstimo
-      libraryService.UndoLastLoan();
+      // Exibir todos os livros e autores após atualização
+      Console.WriteLine("\nAll authors after update:");
+      authorService.GetAuthors();
+      Console.WriteLine("\nAll books after update:");
+      bookService.GetBooks();
 
-      // Verificando se o livro foi devolvido à biblioteca
-      Console.WriteLine(libraryService.SearchBookById(book1.Id) != null ? "Book was returned." : "Book is not available.");
+      // Excluir livro e autor
+      bookService.DeleteBook(book.Id);
+      authorService.DeleteAuthor(author.Id);
 
-      // Teste para buscar autor por ID
-      var foundAuthor = libraryService.SearchAuthorById(author1.Id);
-      Console.WriteLine(foundAuthor != null ? $"Found Author: {foundAuthor.Name}" : "Author not found.");
-
-      Console.WriteLine();
-
-      // Deletando um livro
-      bool bookDeleted = libraryService.DeleteBook(book1.Id);
-      Console.WriteLine(bookDeleted ? "Book deleted successfully." : "Book deletion failed.");
-
-      // Deletando um autor
-      bool authorDeleted = libraryService.DeleteAuthor(author2.Id);
-      Console.WriteLine(authorDeleted ? "Author deleted successfully." : "Author deletion failed.");
-
-      // Verificando se o livro foi removido corretamente
-      var deletedBook = libraryService.SearchBookById(book1.Id);
-      Console.WriteLine(deletedBook == null ? "Book not found." : $"Book still exists: {deletedBook.Title}");
-
-      // Verificando se o autor foi removido corretamente
-      var deletedAuthor = libraryService.SearchAuthorById(author2.Id);
-      Console.WriteLine(deletedAuthor == null ? "Author not found." : $"Author still exists: {deletedAuthor.Name}");
+      // Exibir todos os livros e autores após exclusão
+      Console.WriteLine("\nAll authors after deletion:");
+      authorService.GetAuthors();
+      Console.WriteLine("\nAll books after deletion:");
+      bookService.GetBooks();
     }
   }
 }
