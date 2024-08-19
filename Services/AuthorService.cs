@@ -18,6 +18,7 @@ namespace LibraryManagement.Services
       if (authorByNameDictionary.TryAdd(author.Name, author))
       {
         authorByIdDictionary.Add(author.Id, author);
+        Console.WriteLine("Author added");
       }
       else
       {
@@ -58,8 +59,10 @@ namespace LibraryManagement.Services
         authorByIdDictionary[updatedAuthor.Id] = updatedAuthor;
         authorByNameDictionary.Remove(currentName);
         authorByNameDictionary.Add(updatedAuthor.Name, updatedAuthor);
+        System.Console.WriteLine("Author updated!");
         return true;
       }
+      Console.WriteLine("Author not found!");
       return false;
     }
 
@@ -69,16 +72,21 @@ namespace LibraryManagement.Services
       {
         authorByNameDictionary.Remove(author.Name);
         authorByIdDictionary.Remove(author.Id);
+        Console.WriteLine("Author deleted successfully!");
         return true;
       }
+      Console.WriteLine("Author not found!");
       return false;
     }
 
     public void GetAuthors()
     {
+      Console.WriteLine("Authors: \n");
+      Console.WriteLine("Id".PadRight(40) + " | " + "Author".PadRight(20)); 
+      Console.WriteLine();
       foreach (var author in authorByIdDictionary)
       {
-        Console.WriteLine($"Id: {author.Value.Id} - Author: {author.Value.Name}");
+        Console.WriteLine(author.Value.Id.ToString().PadRight(40) + " | " + author.Value.Name.PadRight(20));
       }
     }
   }

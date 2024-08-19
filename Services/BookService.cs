@@ -18,6 +18,7 @@ namespace LibraryManagement.Services
       if (bookByTitleDictionary.TryAdd(book.Title, book))
       {
         bookByIdDictionary.Add(book.Id, book);
+        Console.WriteLine("Book added!");
       }
       else
       {
@@ -58,8 +59,10 @@ namespace LibraryManagement.Services
         bookByIdDictionary[updatedBook.Id] = updatedBook;
         bookByTitleDictionary.Remove(currentTitle);
         bookByTitleDictionary.Add(updatedBook.Title, updatedBook);
+        Console.WriteLine("Book updated!");
         return true;
       }
+      Console.WriteLine("Book not found!");
       return false;
     }
 
@@ -69,16 +72,21 @@ namespace LibraryManagement.Services
       {
         bookByTitleDictionary.Remove(book.Title);
         bookByIdDictionary.Remove(book.Id);
+        Console.WriteLine("Book deleted successfully!");
         return true;
       }
+      System.Console.WriteLine("Book not found!");
       return false;
     }
 
     public void GetBooks()
     {
+      Console.WriteLine("Books: \n");
+      Console.WriteLine("Id".PadRight(40) + " | " + "Title".PadRight(20) + " | " + "Author".PadRight(20)); 
+      Console.WriteLine();
       foreach (var book in bookByIdDictionary)
       {
-        Console.WriteLine($"Id: {book.Value.Id} - Title: {book.Value.Title}, Author: {book.Value.Author.Name}");
+        Console.WriteLine(book.Value.Id.ToString().PadRight(40) + " | " + book.Value.Title.PadRight(20) + " | " + book.Value.Author.Name.PadRight(20));
       }
     }
   }

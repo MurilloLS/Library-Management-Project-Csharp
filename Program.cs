@@ -28,15 +28,12 @@ namespace LibraryManagement
         {
           case "1":
             ManageAuthorsMenu();
-            Console.ReadKey();
             break;
           case "2":
             ManageBooksMenu();
-            Console.ReadKey();
             break;
           case "3":
             ManageLoansMenu();
-            Console.ReadKey();
             break;
           case "4":
             exit = true;
@@ -70,10 +67,12 @@ namespace LibraryManagement
           Console.Write("Enter author name: ");
           string authorName = Console.ReadLine();
           authorService.AddAuthor(new Author(authorName));
+          Console.ReadKey();
           break;
         case "2":
           Console.Clear();
           authorService.GetAuthors();
+          Console.ReadKey();
           break;
         case "3":
           Console.Clear();
@@ -81,6 +80,7 @@ namespace LibraryManagement
           Guid authorId = Guid.Parse(Console.ReadLine());
           var authorById = authorService.SearchAuthorById(authorId);
           if (authorById != null) Console.WriteLine($"Found Author: {authorById.Name}");
+          Console.ReadKey();
           break;
         case "4":
           Console.Clear();
@@ -88,6 +88,7 @@ namespace LibraryManagement
           string searchName = Console.ReadLine();
           var authorByName = authorService.SearchAuthorByName(searchName);
           if (authorByName != null) Console.WriteLine($"Found Author: {authorByName.Name}");
+          Console.ReadKey();
           break;
         case "5":
           Console.Clear();
@@ -102,13 +103,14 @@ namespace LibraryManagement
             authorToUpdate.Name = newName;
             authorService.UpdateAuthor(authorToUpdate, currentName);
           }
+          Console.ReadKey();
           break;
         case "6":
           Console.Clear();
           Console.Write("Enter author ID: ");
           Guid deleteAuthorId = Guid.Parse(Console.ReadLine());
-          if (authorService.DeleteAuthor(deleteAuthorId))
-            Console.WriteLine("Author deleted successfully.");
+          authorService.DeleteAuthor(deleteAuthorId);
+          Console.ReadKey();
           break;
         case "7":
           break;
@@ -152,10 +154,12 @@ namespace LibraryManagement
           {
             Console.WriteLine("Author not found. Please add the author first.");
           }
+          Console.ReadKey();
           break;
         case "2":
           Console.Clear();
           bookService.GetBooks();
+          Console.ReadKey();
           break;
         case "3":
           Console.Clear(); 
@@ -163,6 +167,7 @@ namespace LibraryManagement
           Guid bookId = Guid.Parse(Console.ReadLine());
           var bookById = bookService.SearchBookById(bookId);
           if (bookById != null) Console.WriteLine($"Found Book: {bookById.Title} by {bookById.Author.Name}");
+          Console.ReadKey();
           break;
         case "4":
           Console.Clear();
@@ -170,6 +175,7 @@ namespace LibraryManagement
           string searchTitle = Console.ReadLine();
           var bookByTitle = bookService.SearchBookByTitle(searchTitle);
           if (bookByTitle != null) Console.WriteLine($"Found Book: {bookByTitle.Title} by {bookByTitle.Author.Name}");
+          Console.ReadKey();
           break;
         case "5":
           Console.Clear();
@@ -184,19 +190,21 @@ namespace LibraryManagement
             bookToUpdate.Title = newTitle;
             bookService.UpdateBook(bookToUpdate, currentTitle);
           }
+          Console.ReadKey();
           break;
         case "6":
           Console.Clear();
           Console.Write("Enter book ID: ");
           Guid deleteBookId = Guid.Parse(Console.ReadLine());
-          if (bookService.DeleteBook(deleteBookId))
-            Console.WriteLine("Book deleted successfully.");
+          bookService.DeleteBook(deleteBookId);
+          Console.ReadKey();
           break;
         case "7":
           break;
         default:
           Console.Clear();
           Console.WriteLine("Invalid option. Please try again.");
+          Console.ReadKey();
           break;
       }
     }
@@ -208,7 +216,9 @@ namespace LibraryManagement
       Console.WriteLine("1. Request Book Loan");
       Console.WriteLine("2. Process Loan Request");
       Console.WriteLine("3. Undo Last Loan");
-      Console.WriteLine("4. Back to Main Menu");
+      Console.WriteLine("4. View Loan Requested");
+      Console.WriteLine("5. View Loan History");
+      Console.WriteLine("6. Back to Main Menu");
       Console.Write("Select an option: ");
       string option = Console.ReadLine();
 
@@ -219,20 +229,34 @@ namespace LibraryManagement
           Console.Write("Enter book ID: ");
           Guid bookId = Guid.Parse(Console.ReadLine());
           loanService.RequestBookLoan(bookId);
+          Console.ReadKey();
           break;
         case "2":
           Console.Clear();
           loanService.ProcessLoanRequest();
+          Console.ReadKey();
           break;
         case "3":
           Console.Clear();
           loanService.UndoLastLoan();
+          Console.ReadKey();
           break;
         case "4":
+          Console.Clear();
+          loanService.GetLoanRequested();
+          Console.ReadKey();
+          break;
+        case "5":
+          Console.Clear();
+          loanService.GetLoanHistory();
+          Console.ReadKey();
+          break;
+        case "6":
           break;
         default:
           Console.Clear();
           Console.WriteLine("Invalid option. Please try again.");
+          Console.ReadKey();
           break;
       }
     }
