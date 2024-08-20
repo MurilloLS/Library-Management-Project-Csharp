@@ -1,4 +1,6 @@
+using System.Security.Cryptography.X509Certificates;
 using LibraryManagement.Models;
+using LibraryManagement.Repositories;
 
 namespace LibraryManagement.Services
 {
@@ -9,15 +11,17 @@ namespace LibraryManagement.Services
 
     public BookService()
     {
-      bookByTitleDictionary = new Dictionary<string, Book>();
-      bookByIdDictionary = new Dictionary<Guid, Book>();
+      bookByIdDictionary =  DataRepository.GetBooks();
+      bookByTitleDictionary = bookByIdDictionary.Values.ToDictionary(x => x.Title, x => x);
     }
 
     public void AddBook(Book book)
     {
-      if (bookByTitleDictionary.TryAdd(book.Title, book))
+      if (!bookByTitleDictionary.ContainsKey(book.Title))
       {
         bookByIdDictionary.Add(book.Id, book);
+        bookByTitleDictionary.Add(book.Title, book);
+        DataRepository.SaveBooks(bookByIdDictionary);
         Console.WriteLine("Book added!");
       }
       else
@@ -34,7 +38,7 @@ namespace LibraryManagement.Services
       }
       else
       {
-        Console.WriteLine("Book not found!");
+        Console.WriteLine("Book not found! ");
         return null;
       }
     }

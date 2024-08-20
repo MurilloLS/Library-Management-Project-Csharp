@@ -1,4 +1,5 @@
 using LibraryManagement.Models;
+using LibraryManagement.Repositories;
 
 namespace LibraryManagement.Services
 {
@@ -9,15 +10,17 @@ namespace LibraryManagement.Services
 
     public AuthorService()
     {
-      authorByNameDictionary = new Dictionary<string, Author>();
-      authorByIdDictionary = new Dictionary<Guid, Author>();
+      authorByIdDictionary = DataRepository.GetAuthors();
+      authorByNameDictionary = authorByIdDictionary.Values.ToDictionary(a => a.Name, a => a);
     }
 
     public void AddAuthor(Author author)
     {
-      if (authorByNameDictionary.TryAdd(author.Name, author))
+      if (!authorByNameDictionary.ContainsKey(author.Name))
       {
         authorByIdDictionary.Add(author.Id, author);
+        authorByNameDictionary.Add(author.Name, author);
+        DataRepository.SaveAuthors(authorByIdDictionary);
         Console.WriteLine("Author added");
       }
       else
@@ -34,7 +37,7 @@ namespace LibraryManagement.Services
       }
       else
       {
-        Console.WriteLine("Author not found!");
+        Console.WriteLine("Author not found! ");
         return null;
       }
     }

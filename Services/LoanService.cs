@@ -1,4 +1,7 @@
 using LibraryManagement.Models;
+using LibraryManagement.Repositories;
+using System.Collections.Generic;
+
 
 namespace LibraryManagement.Services
 {
@@ -68,7 +71,7 @@ namespace LibraryManagement.Services
       Console.WriteLine();
       foreach (var loan in loanRequested)
       {
-        Console.WriteLine(loan.Id.ToString().PadRight(40) + " | " + loan.Title.PadRight(20) + " | " + loan.Author.Name.PadRight(20));
+        Console.WriteLine(loan.Id.ToString().PadRight(40) + " | " + loan.Title.PadRight(20) + " | " + loan.Author.Name.PadRight(20)); 
       }
     }
 
