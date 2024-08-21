@@ -7,7 +7,9 @@ namespace LibraryManagement.Repositories
   {
     public static readonly string authorsFilePath = "Json/authors.json";
     private static readonly string booksFilePath = "Json/books.json";
-
+    private static readonly string loanQueueFilePath = "Json/loanQueue.json";
+    private static readonly string loanHistoryFilePath = "Json/loanHistory.json";
+    
     public static void SaveAuthors(Dictionary<Guid, Author> authors)
     {
       var authorsJson = JsonSerializer.Serialize(authors.Values.ToList());
@@ -23,6 +25,7 @@ namespace LibraryManagement.Repositories
       }
       return new Dictionary<Guid, Author>();
     }
+    
     public static void SaveBooks(Dictionary<Guid, Book> books)
     {
       var booksJson = JsonSerializer.Serialize(books.Values.ToList());
@@ -37,6 +40,38 @@ namespace LibraryManagement.Repositories
         return books.ToDictionary(x => x.Id, x => x);
       }
       return new Dictionary<Guid, Book>();
+    }
+
+    public static void SaveLoanQueue(Queue<Book> loanQueue)
+    {
+      var loanQueueJson = JsonSerializer.Serialize(loanQueue.ToList());
+      File.WriteAllText(loanQueueFilePath, loanQueueJson);
+    }
+    public static Queue<Book> LoadLoanQueue()
+    {
+      if (File.Exists(loanQueueFilePath))
+      {
+        var loanQueueJson = File.ReadAllText(loanQueueFilePath);
+        var loans = JsonSerializer.Deserialize<List<Book>>(loanQueueJson);
+        return new Queue<Book>(loans);
+      }
+      return new Queue<Book>();
+    }
+
+    public static void SaveLoanHistory(Stack<Book> loanHistory)
+    {
+      var loanHistoryJson = JsonSerializer.Serialize(loanHistory.ToList());
+      File.WriteAllText(loanHistoryFilePath, loanHistoryJson);
+    }
+    public static Stack<Book> LoadLoanHistory()
+    {
+      if (File.Exists(loanHistoryFilePath))
+      {
+        var loanHistoryJson = File.ReadAllText(loanHistoryFilePath);
+        var loans = JsonSerializer.Deserialize<List<Book>>(loanHistoryJson);
+        return new Stack<Book>(loans);
+      }
+      return new Stack<Book>();
     }
   }
 }
