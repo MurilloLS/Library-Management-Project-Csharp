@@ -9,15 +9,13 @@ namespace LibraryManagement.Services
   {
     private readonly Queue<Book> loanQueue;
     private readonly Stack<Book> loanHistory;
-    private readonly Stack<Book> loanRequested;
     private readonly BookService bookService;
 
     public LoanService(BookService bookService)
     {
       this.bookService = bookService;
-      loanQueue = new Queue<Book>();
-      loanHistory = new Stack<Book>();
-      loanRequested = new Stack<Book>();
+      loanQueue = DataRepository.LoadLoanQueue();
+      loanHistory = DataRepository.LoadLoanHistory();
     }
 
     public void RequestBookLoan(Guid bookId)
@@ -25,10 +23,10 @@ namespace LibraryManagement.Services
       var book = bookService.SearchBookById(bookId);
       if (book != null)
       {
-        loanRequested.Push(book);
         loanQueue.Enqueue(book);
+        DataRepository.SaveLoanQueue(loanQueue);
         Console.WriteLine($"Book '{book.Title}' has been added to the loan queue.");
-      } 
+      }
       else
       {
         Console.WriteLine("Book not found!");
@@ -42,6 +40,8 @@ namespace LibraryManagement.Services
         Book loanedBook = loanQueue.Dequeue();
         loanHistory.Push(loanedBook);
         bookService.DeleteBook(loanedBook.Id);
+        DataRepository.SaveLoanQueue(loanQueue);
+        DataRepository.SaveLoanHistory(loanHistory);
         Console.WriteLine($"Book '{loanedBook.Title}' has been loaned out.");
       }
       else
@@ -56,6 +56,7 @@ namespace LibraryManagement.Services
       {
         var book = loanHistory.Pop();
         bookService.AddBook(book);
+        DataRepository.SaveLoanHistory(loanHistory);
         Console.WriteLine($"Book '{book.Title}' has been returned.");
       }
       else
@@ -67,18 +68,18 @@ namespace LibraryManagement.Services
     public void GetLoanRequested()
     {
       Console.WriteLine("Loan Requested: \n");
-      Console.WriteLine("Id".PadRight(40) + " | " + "Title".PadRight(20) + " | " + "Author".PadRight(20)); 
+      Console.WriteLine("Id".PadRight(40) + " | " + "Title".PadRight(20) + " | " + "Author".PadRight(20));
       Console.WriteLine();
-      foreach (var loan in loanRequested)
+      foreach (var loan in loanQueue)
       {
-        Console.WriteLine(loan.Id.ToString().PadRight(40) + " | " + loan.Title.PadRight(20) + " | " + loan.Author.Name.PadRight(20)); 
+        Console.WriteLine(loan.Id.ToString().PadRight(40) + " | " + loan.Title.PadRight(20) + " | " + loan.Author.Name.PadRight(20));
       }
     }
 
     public void GetLoanHistory()
     {
       Console.WriteLine("Loan History: \n");
-      Console.WriteLine("Id".PadRight(40) + " | " + "Title".PadRight(20) + " | " + "Author".PadRight(20)); 
+      Console.WriteLine("Id".PadRight(40) + " | " + "Title".PadRight(20) + " | " + "Author".PadRight(20));
       Console.WriteLine();
       foreach (var loan in loanHistory)
       {
